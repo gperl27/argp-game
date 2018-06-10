@@ -46,19 +46,51 @@ function love.draw()
 end
 
 function love.update(dt)
-    if love.keyboard.isDown("w") then
-        char.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown("s") then
-        char.dy = PADDLE_SPEED
-    elseif love.keyboard.isDown("a") then
-        char.dx = -PADDLE_SPEED
-    elseif love.keyboard.isDown("d") then
-        char.dx = PADDLE_SPEED
+    if love.mouse.isDown(1) then
+        local x, y = love.mouse.getPosition() -- get the position of the mouse
+
+        -- right
+        if x > char.x + char.xOffset then
+            char.directionX = "right"
+            char.dx = PADDLE_SPEED
+        end
+
+        -- left
+        if x < char.x + char.xOffset then
+            char.directionX = "left"
+            char.dx = -PADDLE_SPEED
+        end
+
+        -- down
+        if y > char.y + char.yOffset then
+            char.directionY = "runningDown"
+            char.dy = PADDLE_SPEED
+        end
+
+        -- up
+        if y < char.y + char.yOffset then
+            char.directionY = "up"
+            char.dy = -PADDLE_SPEED
+        end
+
+        -- if the difference in x is greater than y
+        -- show horizontal sprite
+        -- else use vertical
+        -- let render method handle delegation
+        if (math.abs(x - char.x) > math.abs(y - char.y)) then
+            print(x, math.abs(x - char.x) > math.abs(y - char.y))
+            char.dominantDirection = "x"
+        else
+            char.dominantDirection = "y"
+        end
     else
+        char.dominantDirection = null
+        char.directionX = null
+        char.directionY = null
+
         char.dy = 0
         char.dx = 0
     end
-    
 
     char:update(dt)
 end
